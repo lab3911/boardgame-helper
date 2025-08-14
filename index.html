@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#0f172a" />
-  <title>Boardgame Helper • Lab391</title>
+  <title>Boardgame Helper • Lisa Berman</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/img/icon-192.png">
@@ -16,7 +16,7 @@
       <img src="assets/img/favicon.svg" alt="" aria-hidden="true" />
       <div>
         <h1>Boardgame Helper</h1>
-        <p class="subtitle">by Lab391</p>
+        <p class="subtitle">by Lisa Berman — LAB391</p>
       </div>
     </div>
     <nav class="nav" role="tablist" aria-label="Primary">
@@ -25,14 +25,12 @@
       <button class="tab" data-tab="turns">Turns & Timer</button>
       <button class="tab" data-tab="tools">Tools</button>
       <button class="tab" data-tab="library">Game Library</button>
-      <button class="tab" data-tab="assistant">AI Assistant</button>
       <button class="tab" data-tab="settings">Settings</button>
     </nav>
   </header>
 
   <main id="views">
-    <!-- DASHBOARD -->
-    <section id="dashboard" class="view active" aria-labelledby="Dashboard">
+    <section id="dashboard" class="view active">
       <div class="grid grid-3">
         <div class="card">
           <h2>Quick Start</h2>
@@ -46,8 +44,8 @@
           <label>Pick a game</label>
           <select id="dashboardGameSelect"></select>
           <div class="actions">
-            <button class="btn" id="open-game-notes">Open Notes</button>
-            <button class="btn" id="ask-game-ai">Ask AI</button>
+            <button class="btn" id="use-selected-game">Use in Scorekeeper</button>
+            <a class="btn" id="open-rules" target="_blank" rel="noopener">Open Rules</a>
           </div>
         </div>
         <div class="card">
@@ -57,7 +55,6 @@
       </div>
     </section>
 
-    <!-- SCOREKEEPER -->
     <section id="scorekeeper" class="view">
       <div class="toolbar">
         <div>
@@ -76,9 +73,7 @@
           </label>
         </div>
       </div>
-
       <div id="scoreGrid" class="score-grid" aria-live="polite"></div>
-
       <div class="panel">
         <details>
           <summary>History</summary>
@@ -87,7 +82,6 @@
       </div>
     </section>
 
-    <!-- TURNS & TIMER -->
     <section id="turns" class="view">
       <div class="grid grid-3">
         <div class="card">
@@ -105,7 +99,6 @@
             </div>
           </div>
         </div>
-
         <div class="card">
           <h2>Timer</h2>
           <div class="timer">
@@ -135,7 +128,6 @@
       </div>
     </section>
 
-    <!-- TOOLS -->
     <section id="tools" class="view">
       <div class="grid grid-3">
         <div class="card">
@@ -166,67 +158,17 @@
       </div>
     </section>
 
-    <!-- GAME LIBRARY -->
     <section id="library" class="view">
       <div class="toolbar">
         <div class="toolbar-row">
-          <button class="btn" id="addGame">Add Game</button>
+          <input id="librarySearch" placeholder="Search by name or tag…" />
+          <button class="btn" id="refreshBGG">Refresh from BGG</button>
           <button class="btn" id="exportLibrary">Export Library</button>
-          <label class="filelike">
-            Import Library
-            <input type="file" id="importLibrary" accept="application/json">
-          </label>
-          <input id="librarySearch" placeholder="Search by name, tag…" />
         </div>
       </div>
-
       <div id="gameList" class="cards"></div>
-
-      <dialog id="gameDialog">
-        <form method="dialog" id="gameForm">
-          <h3>Game</h3>
-          <label>Name<input name="name" required></label>
-          <label>Min Players<input name="minPlayers" type="number" min="1" value="1"></label>
-          <label>Max Players<input name="maxPlayers" type="number" min="1" value="4"></label>
-          <label>Playtime (min)<input name="playtime" type="number" min="5" value="60"></label>
-          <label>Tags<input name="tags" placeholder="engine-building, drafting"></label>
-          <label>Rules Link<input name="link" placeholder="https://…"></label>
-          <label>Notes<textarea name="notes" placeholder="House rules, clarifications…"></textarea></label>
-          <menu>
-            <button class="btn" value="cancel">Cancel</button>
-            <button class="btn primary" value="default">Save</button>
-          </menu>
-        </form>
-      </dialog>
     </section>
 
-    <!-- ASSISTANT -->
-    <section id="assistant" class="view">
-      <div class="grid grid-2">
-        <div class="card">
-          <h2>Ask the AI</h2>
-          <label>Game Context</label>
-          <select id="assistantGame"></select>
-          <div class="chat" id="chatBox" aria-live="polite"></div>
-          <div class="row">
-            <input id="chatInput" placeholder="Ask a rules question…" />
-            <button class="btn primary" id="sendChat">Send</button>
-          </div>
-          <p class="muted small">
-            Tip: Configure an API proxy in Settings for richer answers. Without it, the assistant uses your saved notes and rules links.
-          </p>
-        </div>
-        <div class="card">
-          <h2>Game Notes</h2>
-          <textarea id="assistantNotes" placeholder="These notes are used by the AI when answering."></textarea>
-          <div class="actions">
-            <button class="btn" id="saveAssistantNotes">Save Notes</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- SETTINGS -->
     <section id="settings" class="view">
       <div class="grid grid-2">
         <div class="card">
@@ -241,26 +183,8 @@
           </select>
         </div>
         <div class="card">
-          <h2>AI Configuration (Optional)</h2>
-          <label>Proxy Endpoint <small class="muted">(e.g., your Cloudflare Worker)</small>
-            <input id="aiEndpoint" placeholder="https://your-worker.example/v1/chat/completions">
-          </label>
-          <label>API Key / Token
-            <input id="aiKey" type="password" placeholder="Only stored locally">
-          </label>
-          <label>Model
-            <input id="aiModel" value="gpt-4o-mini">
-          </label>
-          <div class="actions">
-            <button class="btn" id="saveAI">Save</button>
-            <button class="btn" id="testAI">Test</button>
-          </div>
-          <p class="muted small">
-            For GitHub Pages, use a simple proxy server (code included in <code>proxy-example/</code>) to protect your API key.
-          </p>
-        </div>
-        <div class="card">
-          <h2>Backup</h2>
+          <h2>Data</h2>
+          <p>Your BoardGameGeek username is <strong>LAB391</strong>. The Game Library auto-syncs from your owned collection.</p>
           <div class="row">
             <button class="btn" id="exportAll">Export All Data</button>
             <label class="filelike">
@@ -275,7 +199,7 @@
   </main>
 
   <footer class="app-footer">
-    <span>© <span id="year"></span> Boardgame Lab391</span>
+    <span>© <span id="year"></span> Lisa Berman</span>
     <span class="muted">PWA offline enabled</span>
   </footer>
 
