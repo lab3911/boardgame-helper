@@ -26,7 +26,6 @@
       <button class="tab" data-tab="tools">Tools</button>
       <button class="tab" data-tab="library">Game Library</button>
       <button class="tab" data-tab="settings">Settings</button>
-      <button class="tab" data-tab="help">Help</button>
     </nav>
   </header>
 
@@ -197,22 +196,7 @@
         </div>
       </div>
     </section>
-  
-    <section id="help" class="view">
-      <div class="card">
-        <h2>Help & Tips</h2>
-        <p>If something doesn’t load, click <strong>Refresh from BGG</strong> in the <em>Game Library</em> tab. BoardGameGeek sometimes delays exports; the app will retry automatically.</p>
-        <ul class="list">
-          <li><strong>Dashboard</strong>: Pick a game and jump to Scorekeeper.</li>
-          <li><strong>Scorekeeper</strong>: Add players/teams, rounds, and export your table.</li>
-          <li><strong>Turns & Timer</strong>: Track turn order and use the round timer.</li>
-          <li><strong>Tools</strong>: Dice roller, coin flip, card drawer.</li>
-          <li><strong>Game Library</strong>: Your BGG-owned collection (auto-sync for LAB391).</li>
-          <li><strong>Settings</strong>: Theme & data backup.</li>
-        </ul>
-      </div>
-    </section>
-</main>
+  </main>
 
   <footer class="app-footer">
     <span>© <span id="year"></span> Lisa Berman</span>
@@ -224,6 +208,6 @@
   </audio>
 
   <script type="module" src="assets/js/app.js"></script>
-  
+  <script>if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }</script>
 </body>
 </html>

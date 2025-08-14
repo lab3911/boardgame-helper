@@ -1,3 +1,1 @@
-# Cloudflare Worker Proxy
-
-Deploy this worker and set a secret `OPENAI_API_KEY`. Then use its URL in Settings.
+Deploy to Cloudflare Workers and set PROXY in assets/js/app.js to your worker URL, e.g. https://<name>.workers.dev/proxy?url=
