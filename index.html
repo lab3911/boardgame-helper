@@ -1,98 +1,289 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Board Game Helper — Pro</title>
-<link rel="stylesheet" href="style.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>Boardgame Helper • Lab391</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/img/icon-192.png">
+  <link rel="stylesheet" href="assets/css/style.css" />
 </head>
 <body>
-<header class="header">
-  <div class="logo">🎲</div>
-  <div>
-    <h1>Board Game Helper — Pro</h1>
-    <p class="sub">Colorful, clear, and actually works — dice that speak, exact turn order, scorekeeping, and BGG collection.</p>
-  </div>
-</header>
-
-<main class="container">
-  <section class="card" id="diceCard">
-    <h2>Dice Roller</h2>
-    <div class="dice-row">
-      <div class="dice-buttons">
-        <button class="die-btn" data-die="4">Roll d4</button>
-        <button class="die-btn" data-die="6">Roll d6</button>
-        <button class="die-btn" data-die="8">Roll d8</button>
-        <button class="die-btn" data-die="20">Roll d20</button>
+  <header class="app-header">
+    <div class="brand">
+      <img src="assets/img/favicon.svg" alt="" aria-hidden="true" />
+      <div>
+        <h1>Boardgame Helper</h1>
+        <p class="subtitle">by Lab391</p>
       </div>
-      <div class="dice-display" aria-live="polite" id="diceDisplay">
-        <div id="diceBig" class="dice-big">—</div>
-        <div class="dice-controls">
-          <label><input type="checkbox" id="speakToggle" checked /> Speak results</label>
-          <button id="clearHistory">Clear history</button>
+    </div>
+    <nav class="nav" role="tablist" aria-label="Primary">
+      <button class="tab active" data-tab="dashboard" aria-selected="true">Dashboard</button>
+      <button class="tab" data-tab="scorekeeper">Scorekeeper</button>
+      <button class="tab" data-tab="turns">Turns & Timer</button>
+      <button class="tab" data-tab="tools">Tools</button>
+      <button class="tab" data-tab="library">Game Library</button>
+      <button class="tab" data-tab="assistant">AI Assistant</button>
+      <button class="tab" data-tab="settings">Settings</button>
+    </nav>
+  </header>
+
+  <main id="views">
+    <!-- DASHBOARD -->
+    <section id="dashboard" class="view active" aria-labelledby="Dashboard">
+      <div class="grid grid-3">
+        <div class="card">
+          <h2>Quick Start</h2>
+          <p>Create a table, add players, and start tracking points in seconds.</p>
+          <div class="actions">
+            <button class="btn primary" id="go-scorekeeper">Open Scorekeeper</button>
+          </div>
+        </div>
+        <div class="card">
+          <h2>Tonight’s Game</h2>
+          <label>Pick a game</label>
+          <select id="dashboardGameSelect"></select>
+          <div class="actions">
+            <button class="btn" id="open-game-notes">Open Notes</button>
+            <button class="btn" id="ask-game-ai">Ask AI</button>
+          </div>
+        </div>
+        <div class="card">
+          <h2>Recent Tables</h2>
+          <ul id="recentTables" class="list"></ul>
         </div>
       </div>
-    </div>
-    <div class="history">
-      <h3>Roll history</h3>
-      <ul id="rollHistory"></ul>
-    </div>
-  </section>
+    </section>
 
-  <section class="card" id="orderCard">
-    <h2>Turn Order & Scoreboard (2–7 players)</h2>
-    <div class="row">
-      <label>Players: <input id="numPlayers" type="number" min="2" max="7" value="4" /></label>
-      <button id="addPlayer">+ Player</button>
-      <button id="resetPlayers">Reset</button>
-    </div>
-    <div class="names-grid" id="nameInputs"></div>
-    <div class="row">
-      <button id="randomize">Randomize Order</button>
-      <button id="applyManual">Apply Manual Positions</button>
-      <button id="copyOrder">Copy order + scores</button>
-      <button id="resetScores">Reset scores</button>
-    </div>
+    <!-- SCOREKEEPER -->
+    <section id="scorekeeper" class="view">
+      <div class="toolbar">
+        <div>
+          <label>Table Name</label>
+          <input id="tableName" placeholder="e.g., Terraforming Mars—Game Night #12" />
+        </div>
+        <div class="toolbar-row">
+          <button class="btn" id="addPlayer">Add Player</button>
+          <button class="btn" id="addTeam">Add Team</button>
+          <button class="btn" id="newRound">New Round</button>
+          <button class="btn" id="undo">Undo</button>
+          <button class="btn" id="exportTable">Export</button>
+          <label class="filelike">
+            Import
+            <input type="file" id="importTable" accept="application/json">
+          </label>
+        </div>
+      </div>
 
-    <div class="manual-positions">
-      <h4>Manual positions (choose a player for each seat)</h4>
-      <div id="manualPositions" class="manual-grid"></div>
-    </div>
+      <div id="scoreGrid" class="score-grid" aria-live="polite"></div>
 
-    <h4>Current seating (drag to reorder)</h4>
-    <ol id="seatingList" class="seating"></ol>
-  </section>
+      <div class="panel">
+        <details>
+          <summary>History</summary>
+          <pre id="historyLog" class="monospace"></pre>
+        </details>
+      </div>
+    </section>
 
-  <section class="card" id="bggCard">
-    <h2>Load Your BGG Collection</h2>
-    <div class="row">
-      <input id="bggUser" placeholder="BoardGameGeek username" />
-      <button id="loadCollection">Load collection</button>
-      <button id="retryCollection" style="display:none">Retry</button>
-    </div>
-    <p class="muted">We use BGG's public XML API (via a CORS proxy). If BGG is busy, it may say "processing" — wait a few seconds and retry. If your browser blocks the proxy, try a different browser or use the "Paste XML" option below.</p>
+    <!-- TURNS & TIMER -->
+    <section id="turns" class="view">
+      <div class="grid grid-3">
+        <div class="card">
+          <h2>Turn Tracker</h2>
+          <div class="turns">
+            <div class="row">
+              <input id="turnPlayerName" placeholder="Player name" />
+              <button class="btn" id="addTurnPlayer">Add</button>
+              <button class="btn" id="clearTurnOrder">Clear</button>
+            </div>
+            <ol id="turnOrder" class="turn-list"></ol>
+            <div class="row">
+              <button class="btn primary" id="nextTurn">Next Turn</button>
+              <span id="currentTurn" class="pill">No players yet</span>
+            </div>
+          </div>
+        </div>
 
-    <div class="row">
-      <button id="pasteXmlBtn">Paste XML instead</button>
-      <input id="xmlPaste" placeholder="Paste BGG collection XML here" style="display:none" />
-      <button id="submitXml" style="display:none">Load XML</button>
-    </div>
+        <div class="card">
+          <h2>Timer</h2>
+          <div class="timer">
+            <div class="row">
+              <input id="timerMinutes" type="number" min="0" max="240" value="2" aria-label="minutes" />
+              <span>min</span>
+              <input id="timerSeconds" type="number" min="0" max="59" value="0" aria-label="seconds" />
+              <span>sec</span>
+            </div>
+            <div class="row">
+              <button class="btn" id="startTimer">Start</button>
+              <button class="btn" id="pauseTimer">Pause</button>
+              <button class="btn" id="resetTimer">Reset</button>
+            </div>
+            <div class="bigtime" id="timeDisplay">02:00</div>
+            <label><input type="checkbox" id="soundToggle" checked> Sound</label>
+          </div>
+        </div>
 
-    <div id="collectionResults" class="collection-grid"></div>
-  </section>
+        <div class="card">
+          <h2>Round / Victory Conditions</h2>
+          <textarea id="victoryNotes" placeholder="Track round end, victory points conditions, checklists…"></textarea>
+          <div class="actions">
+            <button class="btn" id="saveVictoryNotes">Save Notes</button>
+          </div>
+        </div>
+      </div>
+    </section>
 
-  <section class="card" id="helpCard">
-    <h2>Quick Tips</h2>
-    <ul>
-      <li>Download the ZIP to keep the site forever on your computer.</li>
-      <li>Open <code>index.html</code> in Chrome/Edge/Firefox for best results.</li>
-      <li>If BGG collection doesn't load, try again in a minute or use the "Paste XML" option.</li>
-    </ul>
-  </section>
-</main>
+    <!-- TOOLS -->
+    <section id="tools" class="view">
+      <div class="grid grid-3">
+        <div class="card">
+          <h2>Dice</h2>
+          <div class="row">
+            <label>Sides</label>
+            <input id="diceSides" type="number" min="2" value="6" />
+            <label>Count</label>
+            <input id="diceCount" type="number" min="1" value="2" />
+          </div>
+          <button class="btn" id="rollDice">Roll</button>
+          <div id="diceResults" class="monospace"></div>
+        </div>
+        <div class="card">
+          <h2>Coin Flip</h2>
+          <button class="btn" id="flipCoin">Flip</button>
+          <div id="coinResult" class="bigtext"></div>
+        </div>
+        <div class="card">
+          <h2>Card Drawer</h2>
+          <div class="row">
+            <button class="btn" id="newDeck">New Deck</button>
+            <button class="btn" id="shuffleDeck">Shuffle</button>
+            <button class="btn" id="drawCard">Draw</button>
+          </div>
+          <div id="cardResult" class="bigtext"></div>
+        </div>
+      </div>
+    </section>
 
-<footer class="footer">Made for you — save the ZIP and bookmark the file. Not affiliated with BGG.</footer>
+    <!-- GAME LIBRARY -->
+    <section id="library" class="view">
+      <div class="toolbar">
+        <div class="toolbar-row">
+          <button class="btn" id="addGame">Add Game</button>
+          <button class="btn" id="exportLibrary">Export Library</button>
+          <label class="filelike">
+            Import Library
+            <input type="file" id="importLibrary" accept="application/json">
+          </label>
+          <input id="librarySearch" placeholder="Search by name, tag…" />
+        </div>
+      </div>
 
-<script src="script.js"></script>
+      <div id="gameList" class="cards"></div>
+
+      <dialog id="gameDialog">
+        <form method="dialog" id="gameForm">
+          <h3>Game</h3>
+          <label>Name<input name="name" required></label>
+          <label>Min Players<input name="minPlayers" type="number" min="1" value="1"></label>
+          <label>Max Players<input name="maxPlayers" type="number" min="1" value="4"></label>
+          <label>Playtime (min)<input name="playtime" type="number" min="5" value="60"></label>
+          <label>Tags<input name="tags" placeholder="engine-building, drafting"></label>
+          <label>Rules Link<input name="link" placeholder="https://…"></label>
+          <label>Notes<textarea name="notes" placeholder="House rules, clarifications…"></textarea></label>
+          <menu>
+            <button class="btn" value="cancel">Cancel</button>
+            <button class="btn primary" value="default">Save</button>
+          </menu>
+        </form>
+      </dialog>
+    </section>
+
+    <!-- ASSISTANT -->
+    <section id="assistant" class="view">
+      <div class="grid grid-2">
+        <div class="card">
+          <h2>Ask the AI</h2>
+          <label>Game Context</label>
+          <select id="assistantGame"></select>
+          <div class="chat" id="chatBox" aria-live="polite"></div>
+          <div class="row">
+            <input id="chatInput" placeholder="Ask a rules question…" />
+            <button class="btn primary" id="sendChat">Send</button>
+          </div>
+          <p class="muted small">
+            Tip: Configure an API proxy in Settings for richer answers. Without it, the assistant uses your saved notes and rules links.
+          </p>
+        </div>
+        <div class="card">
+          <h2>Game Notes</h2>
+          <textarea id="assistantNotes" placeholder="These notes are used by the AI when answering."></textarea>
+          <div class="actions">
+            <button class="btn" id="saveAssistantNotes">Save Notes</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section id="settings" class="view">
+      <div class="grid grid-2">
+        <div class="card">
+          <h2>Appearance</h2>
+          <label>Theme</label>
+          <select id="themeSelect">
+            <option value="system">System</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+            <option value="dim">Dim</option>
+            <option value="solar">Solar</option>
+          </select>
+        </div>
+        <div class="card">
+          <h2>AI Configuration (Optional)</h2>
+          <label>Proxy Endpoint <small class="muted">(e.g., your Cloudflare Worker)</small>
+            <input id="aiEndpoint" placeholder="https://your-worker.example/v1/chat/completions">
+          </label>
+          <label>API Key / Token
+            <input id="aiKey" type="password" placeholder="Only stored locally">
+          </label>
+          <label>Model
+            <input id="aiModel" value="gpt-4o-mini">
+          </label>
+          <div class="actions">
+            <button class="btn" id="saveAI">Save</button>
+            <button class="btn" id="testAI">Test</button>
+          </div>
+          <p class="muted small">
+            For GitHub Pages, use a simple proxy server (code included in <code>proxy-example/</code>) to protect your API key.
+          </p>
+        </div>
+        <div class="card">
+          <h2>Backup</h2>
+          <div class="row">
+            <button class="btn" id="exportAll">Export All Data</button>
+            <label class="filelike">
+              Import All
+              <input type="file" id="importAll" accept="application/json">
+            </label>
+            <button class="btn danger" id="wipeAll">Wipe Everything</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <span>© <span id="year"></span> Boardgame Lab391</span>
+    <span class="muted">PWA offline enabled</span>
+  </footer>
+
+  <audio id="beep" preload="auto">
+    <source src="assets/img/beep.mp3" type="audio/mpeg" />
+  </audio>
+
+  <script type="module" src="assets/js/app.js"></script>
+  <script>if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }</script>
 </body>
 </html>
