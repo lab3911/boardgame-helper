@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Board Game Helper — Pro</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<header class="header">
+  <div class="logo">🎲</div>
+  <div>
+    <h1>Board Game Helper — Pro</h1>
+    <p class="sub">Colorful, clear, and actually works — dice that speak, exact turn order, scorekeeping, and BGG collection.</p>
+  </div>
+</header>
+
+<main class="container">
+  <section class="card" id="diceCard">
+    <h2>Dice Roller</h2>
+    <div class="dice-row">
+      <div class="dice-buttons">
+        <button class="die-btn" data-die="4">Roll d4</button>
+        <button class="die-btn" data-die="6">Roll d6</button>
+        <button class="die-btn" data-die="8">Roll d8</button>
+        <button class="die-btn" data-die="20">Roll d20</button>
+      </div>
+      <div class="dice-display" aria-live="polite" id="diceDisplay">
+        <div id="diceBig" class="dice-big">—</div>
+        <div class="dice-controls">
+          <label><input type="checkbox" id="speakToggle" checked /> Speak results</label>
+          <button id="clearHistory">Clear history</button>
+        </div>
+      </div>
+    </div>
+    <div class="history">
+      <h3>Roll history</h3>
+      <ul id="rollHistory"></ul>
+    </div>
+  </section>
+
+  <section class="card" id="orderCard">
+    <h2>Turn Order & Scoreboard (2–7 players)</h2>
+    <div class="row">
+      <label>Players: <input id="numPlayers" type="number" min="2" max="7" value="4" /></label>
+      <button id="addPlayer">+ Player</button>
+      <button id="resetPlayers">Reset</button>
+    </div>
+    <div class="names-grid" id="nameInputs"></div>
+    <div class="row">
+      <button id="randomize">Randomize Order</button>
+      <button id="applyManual">Apply Manual Positions</button>
+      <button id="copyOrder">Copy order + scores</button>
+      <button id="resetScores">Reset scores</button>
+    </div>
+
+    <div class="manual-positions">
+      <h4>Manual positions (choose a player for each seat)</h4>
+      <div id="manualPositions" class="manual-grid"></div>
+    </div>
+
+    <h4>Current seating (drag to reorder)</h4>
+    <ol id="seatingList" class="seating"></ol>
+  </section>
+
+  <section class="card" id="bggCard">
+    <h2>Load Your BGG Collection</h2>
+    <div class="row">
+      <input id="bggUser" placeholder="BoardGameGeek username" />
+      <button id="loadCollection">Load collection</button>
+      <button id="retryCollection" style="display:none">Retry</button>
+    </div>
+    <p class="muted">We use BGG's public XML API (via a CORS proxy). If BGG is busy, it may say "processing" — wait a few seconds and retry. If your browser blocks the proxy, try a different browser or use the "Paste XML" option below.</p>
+
+    <div class="row">
+      <button id="pasteXmlBtn">Paste XML instead</button>
+      <input id="xmlPaste" placeholder="Paste BGG collection XML here" style="display:none" />
+      <button id="submitXml" style="display:none">Load XML</button>
+    </div>
+
+    <div id="collectionResults" class="collection-grid"></div>
+  </section>
+
+  <section class="card" id="helpCard">
+    <h2>Quick Tips</h2>
+    <ul>
+      <li>Download the ZIP to keep the site forever on your computer.</li>
+      <li>Open <code>index.html</code> in Chrome/Edge/Firefox for best results.</li>
+      <li>If BGG collection doesn't load, try again in a minute or use the "Paste XML" option.</li>
+    </ul>
+  </section>
+</main>
+
+<footer class="footer">Made for you — save the ZIP and bookmark the file. Not affiliated with BGG.</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
